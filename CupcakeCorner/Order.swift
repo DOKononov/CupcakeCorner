@@ -33,4 +33,26 @@ final class Order {
     var hasValidAddress: Bool {
         !name.isEmpty && !streetAddress.isEmpty && !city.isEmpty && zip.count == 5
     }
+    
+    var cost: Decimal {
+        
+        // $2 per cake
+        var cost = Decimal(quantity) * 2
+        
+        // complicated cakes cost more
+        cost += Decimal(type) / 2
+        
+        // $1/cake for extra frosting
+        if extraFrosting {
+            cost += Decimal(quantity)
+        }
+        
+        // $0.50/cake for sprinkles
+        
+        if addSprinkles {
+            cost += Decimal(quantity) * 0.5
+        }
+        
+        return cost
+    }
 }
