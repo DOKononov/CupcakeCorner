@@ -6,31 +6,48 @@
 //
 
 import SwiftUI
+import CoreHaptics
 
 struct ContentView: View {
-    @State private var username = ""
-    @State private var email = ""
-    private var formDisabled: Bool {
-        username.count < 5 || email.count < 5
-    }
-    
+//    @State private var counter =  0
+    @State private var engine: CHHapticEngine?
+   
     
     var body: some View {
-        Form {
-            Section {
-                TextField("User name", text: $username)
-                TextField("Email", text: $email)
-            }
-            
-            Section {
-                Button("Creata account") {
-                    print("Creating account...")
-                }
-            }
-            .disabled(formDisabled)
+        Button("Play haptic", action: complexSuccess)
+            .onAppear(perform: prepareHaptics)
+//        .sensoryFeedback(.increase, trigger: counter)
+    }
+    
+    private func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        do {
+            engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            print ("Error starting haptics engine: \(error.localizedDescription)")
         }
     }
     
+    private func complexSuccess() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+
+        var events: [CHHapticEvent] = []
+        
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 1)
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
+        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        events.append(event)
+        
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makeAdvancedPlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Error \(error.localizedDescription)")
+        }
+    }
 }
 
 #Preview {
