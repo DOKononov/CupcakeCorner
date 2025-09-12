@@ -8,7 +8,20 @@
 import Foundation
 
 @Observable
-final class Order {
+final class Order: Codable {
+    
+    enum CodingKeys: String, CodingKey {
+        case _type = "type"
+        case _quantity = "quantity"
+        case _specilaRequestEnabled = "specilaRequestEnabled"
+        case _extraFrosting = "extraFrosting"
+        case _addSprinkles = "addSprinkles"
+        case _name = "name"
+        case _streetAddress = "streetAddress"
+        case _city = "city"
+        case _zip = "zip"
+    }
+    
     static let types = ["Vanilla", "Chocolate", "Strawberry", "Rainbow"]
     
     var type = 0
